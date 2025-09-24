@@ -51,13 +51,12 @@ public class SettingsPanel extends StackPane {
 
         // Content
         content = new VBox(10);
-        content.setPadding(new Insets(42, 10, 10, 10)); // Top padding to not overlap with header
+        content.setPadding(new Insets(10));
+        content.setLayoutY(header.getPrefHeight());
         content.prefWidthProperty().bind(widthProperty());
 
-        getChildren().addAll(content, header);
-        StackPane.setAlignment(header, Pos.TOP_CENTER);
+        getChildren().addAll(header, content);
 
-        // Clipping
         Rectangle clip = new Rectangle();
         clip.setArcWidth(12);
         clip.setArcHeight(12);
