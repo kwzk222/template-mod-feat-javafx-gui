@@ -9,7 +9,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
 
 public class SettingsPanel extends StackPane {
 
@@ -17,7 +16,7 @@ public class SettingsPanel extends StackPane {
     private final HBox header;
     private double dragOffsetX, dragOffsetY;
 
-    public SettingsPanel(String title, Stage stage) {
+    public SettingsPanel(String title) {
         setStyle("-fx-background-color: #1e1e1e; "
                + "-fx-background-radius: 12; "
                + "-fx-border-radius: 12; "
@@ -41,12 +40,14 @@ public class SettingsPanel extends StackPane {
 
         // Make panel draggable only from header
         header.setOnMousePressed(e -> {
-            dragOffsetX = e.getScreenX() - stage.getX();
-            dragOffsetY = e.getScreenY() - stage.getY();
+            Window window = getScene().getWindow();
+            dragOffsetX = e.getScreenX() - window.getX();
+            dragOffsetY = e.getScreenY() - window.getY();
         });
         header.setOnMouseDragged(e -> {
-            stage.setX(e.getScreenX() - dragOffsetX);
-            stage.setY(e.getScreenY() - dragOffsetY);
+            Window window = getScene().getWindow();
+            window.setX(e.getScreenX() - dragOffsetX);
+            window.setY(e.getScreenY() - dragOffsetY);
         });
 
         // Content

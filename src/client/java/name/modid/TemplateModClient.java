@@ -9,12 +9,10 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.Window;
 import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
 import org.lwjgl.glfw.GLFW;
 
 public class TemplateModClient implements ClientModInitializer {
     private static SettingsWindow settingsWindow;
-    private static KeyBinding toggleGuiKeyBinding;
     private static boolean isGuiOpen = false;
 
     private static int lastWinX = Integer.MIN_VALUE;
@@ -22,26 +20,28 @@ public class TemplateModClient implements ClientModInitializer {
     private static int lastWinW = Integer.MIN_VALUE;
     private static int lastWinH = Integer.MIN_VALUE;
 
-    @Override
-    public void onInitializeClient() {
-        toggleGuiKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.template-mod.toggle_gui",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_RIGHT_SHIFT,
-                "category.template-mod.main"
+    private static final KeyBinding openSettings =
+        KeyBindingHelper.registerKeyBinding(new KeyBinding(
+            "key.template-mod.opensettings",
+            InputUtil.Type.KEYSYM,
+            GLFW.GLFW_KEY_RIGHT_SHIFT,
+            "category.template-mod"
         ));
 
-        new JFXPanel(); // Initializes the JavaFX toolkit
-
-        Platform.runLater(() -> {
-            settingsWindow = new SettingsWindow();
-        });
-
-        ClientTickEvents.START_CLIENT_TICK.register(client -> {
-            while (toggleGuiKeyBinding.wasPressed()) {
+    @Override
+    public void onInitializeClient() {
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (openSettings.wasPressed()) {
                 isGuiOpen = !isGuiOpen;
                 Platform.runLater(() -> {
+                    if (settingsWindow == null) {
+                        settingsWindow = new SettingsWindow();
+                    }
                     if (isGuiOpen) {
+                        Window w = MinecraftClient.getInstance().getWindow();
+                        if (w != null) {
+                            settingsWindow.setPos(w.getX() + 40, w.getY() + 40);
+                        }
                         settingsWindow.show();
                     } else {
                         settingsWindow.hide();

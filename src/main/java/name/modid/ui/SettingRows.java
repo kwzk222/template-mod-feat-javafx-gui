@@ -6,6 +6,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import name.modid.ui.components.DoubleSlider;
 import name.modid.ui.components.SingleSlider;
+import javafx.scene.Cursor;
+import javafx.scene.control.ListCell;
 
 public class SettingRows {
 
@@ -28,7 +30,7 @@ public class SettingRows {
         valueLabel.setTextFill(Color.WHITE);
 
         slider.setOnValueChanged(val -> {
-            valueLabel.setText((int) val.doubleValue() + "%");
+            valueLabel.setText((int) (double) val + "%");
         });
 
         HBox row = new HBox(10, label, slider, valueLabel);
@@ -57,6 +59,27 @@ public class SettingRows {
         Label label = new Label(name);
         label.setTextFill(Color.WHITE);
         label.setPrefWidth(80);
+
+        combo.setCursor(Cursor.HAND);
+
+        combo.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item);
+                setTextFill(Color.WHITE);
+                setStyle("-fx-background-color: #333; -fx-border-width: 0;");
+            }
+        });
+        combo.setCellFactory(list -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item);
+                setTextFill(Color.WHITE);
+                setStyle("-fx-background-color: #222; -fx-border-width: 0;");
+            }
+        });
 
         HBox row = new HBox(10, label, combo);
         row.setAlignment(Pos.CENTER_LEFT);

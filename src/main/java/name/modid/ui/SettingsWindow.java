@@ -20,7 +20,7 @@ public class SettingsWindow {
         stage.setAlwaysOnTop(true);
 
         // === SETTINGS PANEL ===
-        SettingsPanel panel = new SettingsPanel("Template Mod Settings", stage);
+        SettingsPanel panel = new SettingsPanel("Template Mod Settings");
         panel.setPrefSize(420, 360);
 
         // === TOGGLE ===
@@ -30,7 +30,6 @@ public class SettingsWindow {
         toggle.setMaxSize(80, 28);
         toggle.setMinSize(80, 28);
         toggle.setAlignment(Pos.CENTER);
-        toggle.setStyle("-fx-background-color: #e53935; -fx-text-fill: white; -fx-font-weight: bold;");
         toggle.setSelected(true);
 
         toggle.selectedProperty().addListener((obs, oldVal, newVal) -> {
@@ -57,7 +56,6 @@ public class SettingsWindow {
         ComboBox<String> combo = new ComboBox<>();
         combo.getItems().addAll("Alpha", "Beta", "Gamma");
         combo.setValue("Alpha");
-        combo.setStyle("-fx-background-color: #222; -fx-border-color: #222; -fx-text-fill: white;");
         panel.addSetting(SettingRows.makeSelectRow("Mode", combo));
 
         // === SCENE ===
