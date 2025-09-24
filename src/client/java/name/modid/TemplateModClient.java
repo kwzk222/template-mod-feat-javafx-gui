@@ -131,22 +131,32 @@ public class TemplateModClient implements ClientModInitializer {
         label.setTextFill(Color.WHITE);
         label.setPrefWidth(80);
 
-        toggle.setMinWidth(60);
-        toggle.setPrefWidth(60);
-        toggle.setMaxWidth(60);
+        toggle.setPrefWidth(80);
+        toggle.setPrefHeight(28);
+        toggle.setMaxSize(80, 28);
+        toggle.setMinSize(80, 28);
         toggle.setAlignment(Pos.CENTER);
-        toggle.setStyle("-fx-background-color: #e53935; -fx-text-fill: white;");
         toggle.setCursor(Cursor.HAND);
 
-        toggle.selectedProperty().addListener((obs, oldVal, isOn) -> {
-            if (isOn) {
+        toggle.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
                 toggle.setText("ON");
-                toggle.setStyle("-fx-background-color: #43a047; -fx-text-fill: white;");
+                toggle.setStyle("-fx-background-color: #e53935; -fx-text-fill: white; -fx-font-weight: bold;");
             } else {
                 toggle.setText("OFF");
-                toggle.setStyle("-fx-background-color: #e53935; -fx-text-fill: white;");
+                toggle.setStyle("-fx-background-color: #555; -fx-text-fill: white; -fx-font-weight: bold;");
             }
         });
+
+        // Set initial state
+        if (toggle.isSelected()) {
+            toggle.setText("ON");
+            toggle.setStyle("-fx-background-color: #e53935; -fx-text-fill: white; -fx-font-weight: bold;");
+        } else {
+            toggle.setText("OFF");
+            toggle.setStyle("-fx-background-color: #555; -fx-text-fill: white; -fx-font-weight: bold;");
+        }
+
 
         HBox row = new HBox(10, label, toggle);
         row.setAlignment(Pos.CENTER_LEFT);
@@ -159,7 +169,9 @@ public class TemplateModClient implements ClientModInitializer {
         label.setPrefWidth(80);
         Label valueLabel = new Label((int) slider.getValue() + "%");
         valueLabel.setTextFill(Color.WHITE);
-        slider.setOnValueChanged(val -> valueLabel.setText((int) val.doubleValue() + "%"));
+        slider.setOnValueChanged(val -> {
+            valueLabel.setText((int) val.doubleValue() + "%");
+        });
         HBox row = new HBox(10, label, slider, valueLabel);
         row.setAlignment(Pos.CENTER_LEFT);
         return row;

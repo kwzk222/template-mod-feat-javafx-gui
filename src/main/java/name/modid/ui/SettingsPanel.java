@@ -5,11 +5,12 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
-public class SettingsPanel extends Pane {
+public class SettingsPanel extends StackPane {
 
     private final VBox content;
     private final HBox header;
@@ -50,11 +51,19 @@ public class SettingsPanel extends Pane {
 
         // Content
         content = new VBox(10);
-        content.setPadding(new Insets(10));
-        content.setLayoutY(header.getPrefHeight());
+        content.setPadding(new Insets(42, 10, 10, 10)); // Top padding to not overlap with header
         content.prefWidthProperty().bind(widthProperty());
 
-        getChildren().addAll(header, content);
+        getChildren().addAll(content, header);
+        StackPane.setAlignment(header, Pos.TOP_CENTER);
+
+        // Clipping
+        Rectangle clip = new Rectangle();
+        clip.setArcWidth(12);
+        clip.setArcHeight(12);
+        clip.widthProperty().bind(widthProperty());
+        clip.heightProperty().bind(heightProperty());
+        setClip(clip);
     }
 
     // API to add different setting rows
