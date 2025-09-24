@@ -1,0 +1,70 @@
+.root {
+    -fx-background-color: transparent;
+}
+
+.settings-root {
+    -fx-background-color: rgba(20, 20, 20, 0.95);
+    -fx-background-radius: 12;
+    -fx-padding: 12;
+    -fx-spacing: 8;
+}
+
+.label {
+    -fx-text-fill: #ddd;
+    -fx-font-size: 12px;
+}
+
+.toggle-button {
+    -fx-background-radius: 12;
+    -fx-background-color: #333;
+    -fx-text-fill: #ddd;
+}
+
+.slider .track {
+    -fx-background-color: #333;
+}
+.slider .thumb {
+    -fx-background-color: #e53935;
+    -fx-background-radius: 50%;
+    -fx-padding: 6;
+}
+.slider .tick {
+    -fx-stroke: #555;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #e53935; /* red accent */
+    -fx-text-fill: white;
+}
+
+.combo-box {
+    -fx-background-color: #222;     /* dark box background */
+    -fx-border-color: #222;         /* hide the default border */
+    -fx-border-width: 0;
+    -fx-text-fill: white;           /* selected value text color */
+}
+
+.combo-box .list-view {
+    -fx-background-color: #222;     /* dropdown background */
+    -fx-control-inner-background: #222;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: #222;     /* default cell background */
+    -fx-text-fill: white;           /* text color */
+    -fx-border-width: 0;            /* remove borders between items */
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #e53935;  /* red on hover */
+    -fx-text-fill: white;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: #222;     /* arrow button background */
+    -fx-border-width: 0;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #e53935;  /* red arrow if you want */
+}
