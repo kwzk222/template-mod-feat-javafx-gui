@@ -2,43 +2,46 @@ package name.modid.ui;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Window;
+import javafx.scene.Node;
 
-public class SettingsPanel extends StackPane {
+public class SettingsPanel extends VBox {
 
-    private final VBox content;
     private final HBox header;
     private double dragOffsetX, dragOffsetY;
+    private final VBox content;
 
-    public SettingsPanel(String title) {
-        setStyle("-fx-background-color: #1e1e1e; "
-               + "-fx-background-radius: 12; "
-               + "-fx-border-radius: 12; "
-               + "-fx-border-color: #e53935; "
-               + "-fx-border-width: 2;");
+    public SettingsPanel(String titleText) {
 
-        setPrefSize(400, 300);
+        // === PANEL STYLING ===
+        setSpacing(0);
+        setPadding(new Insets(0));
+        setStyle("-fx-background-color: #1e1e1e; -fx-background-radius: 12; -fx-border-radius: 12; -fx-border-color: #e53935; -fx-border-width: 2;");
 
-        // Header
-        Label titleLabel = new Label(title);
-        titleLabel.setTextFill(Color.WHITE);
-        titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14;");
+        // Clip to rounded corners
+        Rectangle clip = new Rectangle();
+        clip.widthProperty().bind(widthProperty());
+        clip.heightProperty().bind(heightProperty());
+        clip.setArcWidth(12);
+        clip.setArcHeight(12);
+        setClip(clip);
 
-        header = new HBox(titleLabel);
+        // === HEADER ===
+        Label title = new Label(titleText);
+        title.setTextFill(Color.WHITE);
+        title.setStyle("-fx-font-weight: bold; -fx-font-size: 14;");
+
+        header = new HBox(title);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(8));
+        header.setStyle("-fx-background-color: #2a2a2a; -fx-background-radius: 12 12 0 0;");
         header.setPrefHeight(32);
-        header.prefWidthProperty().bind(widthProperty());
-        header.setStyle("-fx-background-color: #2a2a2a; "
-                      + "-fx-background-radius: 12 12 0 0;");
 
-        // Make panel draggable only from header
+        // Dragging logic (only via header)
         header.setOnMousePressed(e -> {
             Window window = getScene().getWindow();
             dragOffsetX = e.getScreenX() - window.getX();
@@ -50,24 +53,17 @@ public class SettingsPanel extends StackPane {
             window.setY(e.getScreenY() - dragOffsetY);
         });
 
-        // Content
+        // === CONTENT AREA ===
         content = new VBox(10);
         content.setPadding(new Insets(10));
-        content.setLayoutY(header.getPrefHeight());
-        content.prefWidthProperty().bind(widthProperty());
+        content.setAlignment(Pos.TOP_LEFT);
 
+        // Add header + content
         getChildren().addAll(header, content);
-
-        Rectangle clip = new Rectangle();
-        clip.setArcWidth(12);
-        clip.setArcHeight(12);
-        clip.widthProperty().bind(widthProperty());
-        clip.heightProperty().bind(heightProperty());
-        setClip(clip);
     }
 
-    // API to add different setting rows
-    public void addSetting(Node settingRow) {
-        content.getChildren().add(settingRow);
+    // Add any setting row
+    public void addSetting(Node row) {
+        content.getChildren().add(row);
     }
 }
