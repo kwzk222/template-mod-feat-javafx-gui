@@ -1,13 +1,14 @@
 package name.modid;
 
-import name.modid.ui.SettingsWindow;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
-import javafx.application.Platform;
+
+import name.modid.ui.JavaFXBootstrap;
+import name.modid.ui.SettingsWindow;
 
 public class TemplateModClient implements ClientModInitializer {
 
@@ -16,24 +17,31 @@ public class TemplateModClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        // Register keybinding: Right Shift
+        // Ensure JavaFX is ready
+        JavaFXBootstrap.init();
+
+        // Register keybinding (Right Shift)
         openSettingsKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.template-mod.open_settings",       // translation key
+                "key.template-mod.open_settings",
                 InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_RIGHT_SHIFT,              // the actual key
-                "category.template-mod"                 // category in controls menu
+                GLFW.GLFW_KEY_RIGHT_SHIFT,
+                "category.template-mod"
         ));
 
-        // Listen for key press
+        // Tick listener
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openSettingsKey.wasPressed()) {
-                // Run on JavaFX UI thread
-                Platform.runLater(() -> {
+                JavaFXBootstrap.runLater(() -> {
                     if (settingsWindow == null) {
                         settingsWindow = new SettingsWindow();
                         settingsWindow.show();
                     } else {
-                        settingsWindow.show(); // reopen if hidden
+                        // toggle visibility
+                        if (settingsWindow.isShowing()) {
+                            settingsWindow.hide();
+                        } else {
+                            settingsWindow.show();
+                        }
                     }
                 });
             }

@@ -65,8 +65,19 @@ public class SettingsWindow {
         stage.setScene(scene);
     }
 
-    public void show() { stage.show(); }
-    public void hide() { stage.hide(); }
+    public void show() {
+        stage.show();
+        stage.toFront();
+    }
+
+    public void hide() {
+        stage.hide();
+    }
+
+    public boolean isShowing() {
+        return stage.isShowing();
+    }
+
     public void setPos(double x, double y) {
         stage.setX(x);
         stage.setY(y);
