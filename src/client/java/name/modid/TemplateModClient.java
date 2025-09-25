@@ -10,21 +10,31 @@ import org.lwjgl.glfw.GLFW;
 import javafx.application.Platform;
 
 public class TemplateModClient implements ClientModInitializer {
-    private static final KeyBinding openSettings =
-        KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "key.template-mod.opensettings",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_RIGHT_SHIFT,
-            "category.template-mod"
-        ));
+
+    private static KeyBinding openSettingsKey;
+    private static SettingsWindow settingsWindow;
 
     @Override
     public void onInitializeClient() {
+        // Register keybinding: Right Shift
+        openSettingsKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.template-mod.open_settings",       // translation key
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_RIGHT_SHIFT,              // the actual key
+                "category.template-mod"                 // category in controls menu
+        ));
+
+        // Listen for key press
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (openSettings.wasPressed()) {
+            while (openSettingsKey.wasPressed()) {
+                // Run on JavaFX UI thread
                 Platform.runLater(() -> {
-                    SettingsWindow settingsWindow = new SettingsWindow();
-                    settingsWindow.show();
+                    if (settingsWindow == null) {
+                        settingsWindow = new SettingsWindow();
+                        settingsWindow.show();
+                    } else {
+                        settingsWindow.show(); // reopen if hidden
+                    }
                 });
             }
         });
