@@ -4,22 +4,12 @@ import name.modid.ui.SettingsWindow;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.Window;
-import javafx.application.Platform;
 import org.lwjgl.glfw.GLFW;
+import javafx.application.Platform;
 
 public class TemplateModClient implements ClientModInitializer {
-    private static SettingsWindow settingsWindow;
-    private static boolean isGuiOpen = false;
-
-    private static int lastWinX = Integer.MIN_VALUE;
-    private static int lastWinY = Integer.MIN_VALUE;
-    private static int lastWinW = Integer.MIN_VALUE;
-    private static int lastWinH = Integer.MIN_VALUE;
-
     private static final KeyBinding openSettings =
         KeyBindingHelper.registerKeyBinding(new KeyBinding(
             "key.template-mod.opensettings",
@@ -32,42 +22,9 @@ public class TemplateModClient implements ClientModInitializer {
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openSettings.wasPressed()) {
-                isGuiOpen = !isGuiOpen;
                 Platform.runLater(() -> {
-                    if (settingsWindow == null) {
-                        settingsWindow = new SettingsWindow();
-                    }
-                    if (isGuiOpen) {
-                        Window w = MinecraftClient.getInstance().getWindow();
-                        if (w != null) {
-                            settingsWindow.setPos(w.getX() + 40, w.getY() + 40);
-                        }
-                        settingsWindow.show();
-                    } else {
-                        settingsWindow.hide();
-                    }
-                });
-            }
-
-            if (!isGuiOpen) return;
-
-            Window w = MinecraftClient.getInstance().getWindow();
-            if (w == null) return;
-
-            int winX = w.getX();
-            int winY = w.getY();
-            int winW = w.getWidth();
-            int winH = w.getHeight();
-
-            if (winX != lastWinX || winY != lastWinY || winW != lastWinW || winH != lastWinH) {
-                lastWinX = winX;
-                lastWinY = winY;
-                lastWinW = winW;
-                lastWinH = winH;
-                Platform.runLater(() -> {
-                    if (settingsWindow != null) {
-                        settingsWindow.setPos(winX + 40, winY + 40);
-                    }
+                    SettingsWindow settingsWindow = new SettingsWindow();
+                    settingsWindow.show();
                 });
             }
         });
