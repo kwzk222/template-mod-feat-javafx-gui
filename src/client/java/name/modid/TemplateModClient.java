@@ -20,6 +20,16 @@ public class TemplateModClient implements ClientModInitializer {
         // Ensure JavaFX is ready
         JavaFXBootstrap.init();
 
+        // FOR DEBUGGING: Open window on launch to verify UI
+        JavaFXBootstrap.runLater(() -> {
+            if (settingsWindow == null) {
+                settingsWindow = new SettingsWindow();
+                settingsWindow.show();
+            }
+        });
+
+        // The keybinding logic is temporarily disabled below to allow for testing.
+        /*
         // Register keybinding (Right Shift)
         openSettingsKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.template-mod.open_settings",
@@ -46,5 +56,6 @@ public class TemplateModClient implements ClientModInitializer {
                 });
             }
         });
+        */
     }
 }
