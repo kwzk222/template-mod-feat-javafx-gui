@@ -111,6 +111,29 @@ public class DoubleSlider extends Pane {
 
     public double getLow() { return Math.min(valueA, valueB); }
     public double getHigh() { return Math.max(valueA, valueB); }
+    public double getMin() { return min; }
+    public double getMax() { return max; }
+
+    public void setLowValue(double newLow) {
+        double clampedLow = clamp(newLow, min, getHigh());
+        if (valueA < valueB) {
+            valueA = clampedLow;
+        } else {
+            valueB = clampedLow;
+        }
+        positionThumbs();
+    }
+
+    public void setHighValue(double newHigh) {
+        double clampedHigh = clamp(newHigh, getLow(), max);
+        if (valueA > valueB) {
+            valueA = clampedHigh;
+        } else {
+            valueB = clampedHigh;
+        }
+        positionThumbs();
+    }
+
     public double getRandomInRange() {
         return getLow() + Math.random() * (getHigh() - getLow());
     }

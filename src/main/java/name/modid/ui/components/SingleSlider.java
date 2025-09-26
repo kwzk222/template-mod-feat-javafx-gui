@@ -82,4 +82,15 @@ public class SingleSlider extends Pane {
     private Consumer<Double> onValueChanged;
     public void setOnValueChanged(Consumer<Double> c) { onValueChanged = c; }
     public double getValue() { return value; }
+    public double getMin() { return min; }
+    public double getMax() { return max; }
+
+    public void setValue(double newValue) {
+        this.value = clamp(newValue, min, max);
+        positionThumb();
+        highlight.setWidth(valueToScreen(this.value));
+        if (onValueChanged != null) {
+            onValueChanged.accept(this.value);
+        }
+    }
 }

@@ -3,6 +3,7 @@ package name.modid.ui;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import name.modid.ui.components.ToggleSwitch;
@@ -48,7 +49,12 @@ public class SettingsPanel extends Stage {
         // Add all modules to root
         root.getChildren().addAll(combatModule, movementModule);
 
-        Scene scene = new Scene(root, 400, 500);
+        // Wrap root in a ScrollPane for scrollability
+        ScrollPane scrollPane = new ScrollPane(root);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background: #2b2b2b; -fx-border-color: #444444;");
+
+        Scene scene = new Scene(scrollPane, 400, 500);
 
         // Load the external stylesheet
         try {

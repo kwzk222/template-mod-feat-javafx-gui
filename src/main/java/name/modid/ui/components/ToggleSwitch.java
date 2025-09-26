@@ -23,10 +23,10 @@ public class ToggleSwitch extends Button {
     private void updateState() {
         if (selected) {
             setText(baseLabel + ": ON");
-            setStyle("-fx-background-color: #b22222; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
+            setStyle("-fx-background-color: #8b0000; -fx-text-fill: white; -fx-background-radius: 12; -fx-font-weight: bold;");
         } else {
             setText(baseLabel + ": OFF");
-            setStyle("-fx-background-color: #555555; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
+            setStyle("-fx-background-color: #333333; -fx-text-fill: white; -fx-background-radius: 12; -fx-font-weight: bold;");
         }
     }
 
