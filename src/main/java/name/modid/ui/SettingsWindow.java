@@ -1,12 +1,19 @@
 package name.modid.ui;
 
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class SettingsWindow {
     private static Stage stage;
+    private static boolean initialized = false;
 
     public static void init() {
+        if (!initialized) {
+            Platform.startup(() -> {}); // starts JavaFX toolkit
+            initialized = true;
+        }
+
         if (stage == null) {
             stage = new Stage();
             stage.setTitle("Settings");

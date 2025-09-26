@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
+import javafx.stage.Stage;
 import name.modid.ui.SettingsWindow;
 
 public class TemplateModClient implements ClientModInitializer {
@@ -23,12 +24,18 @@ public class TemplateModClient implements ClientModInitializer {
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (openSettings.wasPressed()) {
+            if (openSettings.wasPressed()) {
                 Platform.runLater(() -> {
-                    if (SettingsWindow.getStage().isShowing()) {
-                        SettingsWindow.getStage().hide();
-                    } else {
-                        SettingsWindow.showWindow();
+                    try {
+                        SettingsWindow.init();
+                        Stage stage = SettingsWindow.getStage();
+                        if (stage.isShowing()) {
+                            stage.hide();
+                        } else {
+                            SettingsWindow.showWindow();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 });
             }
