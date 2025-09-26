@@ -1,5 +1,6 @@
 package name.modid.ui;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -33,8 +34,9 @@ public class SettingRows {
             valueLabel.setText((int) (double) val + "%");
         });
 
-        HBox row = new HBox(10, label, slider, valueLabel);
+        HBox row = new HBox(8, label, slider, valueLabel); // Reduced spacing
         row.setAlignment(Pos.CENTER_LEFT);
+        row.setPadding(new Insets(0, 0, 0, -12)); // Shift slider left
         return row;
     }
 
@@ -50,8 +52,9 @@ public class SettingRows {
             valueLabel.setText((int)slider.getLow() + "-" + (int)slider.getHigh() + " ticks");
         });
 
-        HBox row = new HBox(10, label, slider, valueLabel);
+        HBox row = new HBox(8, label, slider, valueLabel); // Reduced spacing
         row.setAlignment(Pos.CENTER_LEFT);
+        row.setPadding(new Insets(0, 0, 0, -12)); // Shift slider left
         return row;
     }
 
@@ -68,7 +71,7 @@ public class SettingRows {
                 super.updateItem(item, empty);
                 setText(empty || item == null ? null : item);
                 setTextFill(Color.WHITE);
-                setStyle("-fx-background-color: #333; -fx-border-width: 0;");
+                setStyle("-fx-background-color: #2b2b2b; -fx-border-width: 0;"); // Unified background
             }
         });
         combo.setCellFactory(list -> new ListCell<>() {
@@ -77,7 +80,7 @@ public class SettingRows {
                 super.updateItem(item, empty);
                 setText(empty || item == null ? null : item);
                 setTextFill(Color.WHITE);
-                setStyle("-fx-background-color: #222; -fx-border-width: 0;");
+                setStyle("-fx-background-color: #2b2b2b; -fx-border-width: 0;"); // Unified background
             }
         });
 

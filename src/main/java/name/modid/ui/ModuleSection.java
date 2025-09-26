@@ -38,7 +38,7 @@ public class ModuleSection extends VBox {
         });
 
         // Expand/collapse arrow
-        expandButton = new Button("▶");
+        expandButton = new Button("►"); // Use cleaner initial arrow
         expandButton.setCursor(Cursor.HAND);
         expandButton.setPrefWidth(24);
         expandButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 12;");
@@ -67,7 +67,7 @@ public class ModuleSection extends VBox {
 
     private void toggleExpand() {
         expanded = !expanded;
-        expandButton.setText(expanded ? "▼" : "▶");
+        expandButton.setText(expanded ? "▼" : "►");  // Use cleaner arrows
         contentBox.setVisible(expanded);
         contentBox.setManaged(expanded);
     }

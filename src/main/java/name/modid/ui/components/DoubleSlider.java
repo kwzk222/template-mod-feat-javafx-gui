@@ -30,12 +30,12 @@ public class DoubleSlider extends Pane {
         setCursor(Cursor.HAND);
 
         track = new Rectangle(0, 14, getPrefWidth(), 4);
-        track.setFill(Color.web("#333")); // dark track
+        track.setFill(Color.web("#555555")); // Unified inactive color
 
         rangeHighlight = new Rectangle();
         rangeHighlight.setY(track.getY());
         rangeHighlight.setHeight(track.getHeight());
-        rangeHighlight.setFill(Color.web("#e53935")); // red
+        rangeHighlight.setFill(Color.web("#b22222")); // Unified active color
 
         thumbA = createThumb(snapStep);
         thumbB = createThumb(snapStep);
@@ -57,7 +57,7 @@ public class DoubleSlider extends Pane {
     }
 
     private Circle createThumb(int snapStep) {
-        Circle c = new Circle(6, Color.web("#e53935")); // red accent
+        Circle c = new Circle(6, Color.web("#b22222")); // Unified active color
         c.setCursor(Cursor.HAND);
 
         c.setOnMouseDragged(e -> {

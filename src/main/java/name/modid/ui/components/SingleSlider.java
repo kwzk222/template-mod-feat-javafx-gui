@@ -25,14 +25,14 @@ public class SingleSlider extends Pane {
 
         // Track
         track = new Rectangle(0, 14, getPrefWidth(), 4);
-        track.setFill(Color.web("#333"));
+        track.setFill(Color.web("#555555")); // Unified inactive color
 
         // Highlight from 0 to thumb
         highlight = new Rectangle(0, 14, valueToScreen(value), 4);
-        highlight.setFill(Color.web("#e53935"));
+        highlight.setFill(Color.web("#b22222")); // Unified active color
 
         // Thumb
-        thumb = new Circle(6, Color.web("#e53935"));
+        thumb = new Circle(6, Color.web("#b22222")); // Unified active color
         thumb.setCursor(Cursor.HAND);
         positionThumb();
 

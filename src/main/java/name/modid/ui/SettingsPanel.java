@@ -3,9 +3,9 @@ package name.modid.ui;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import name.modid.ui.components.ToggleSwitch;
 import name.modid.ui.components.DoubleSlider;
 import name.modid.ui.components.SingleSlider;
 
@@ -22,11 +22,7 @@ public class SettingsPanel extends Stage {
         ModuleSection combatModule = new ModuleSection("Combat");
 
         // AutoAttack Toggle
-        ToggleButton autoAttackToggle = new ToggleButton("ON");
-        // Note: The new ModuleSection handles the main ON/OFF state.
-        // This is a sub-setting, so we can use a simpler toggle or a different control.
-        // For this example, we'll just add a basic toggle row.
-        combatModule.addSetting(SettingRows.makeToggleRow("AutoAttack", autoAttackToggle));
+        combatModule.addSetting(new ToggleSwitch("AutoAttack"));
 
         // Chance Slider
         SingleSlider chanceSlider = new SingleSlider(0, 100, 50, 1);
