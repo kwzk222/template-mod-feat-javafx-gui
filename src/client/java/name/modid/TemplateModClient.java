@@ -1,7 +1,7 @@
 package name.modid;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -28,8 +28,8 @@ public class TemplateModClient implements ClientModInitializer {
                 "category.template-mod"
         ));
 
-        // Tick listener
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        // Render listener, runs every frame, even in menus
+        WorldRenderEvents.END.register(context -> {
             while (openSettingsKey.wasPressed()) {
                 JavaFXBootstrap.runLater(() -> {
                     if (settingsWindow == null) {

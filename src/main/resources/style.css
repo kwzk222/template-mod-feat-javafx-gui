@@ -68,3 +68,8 @@
 .combo-box .arrow {
     -fx-background-color: #e53935;  /* red arrow if you want */
 }
+
+.combo-box:focused {
+    -fx-faint-focus-color: transparent;
+    -fx-focus-color: transparent;
+}

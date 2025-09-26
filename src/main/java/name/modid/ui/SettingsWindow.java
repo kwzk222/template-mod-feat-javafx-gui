@@ -24,23 +24,32 @@ public class SettingsWindow {
         panel.setPrefSize(420, 360);
 
         // === TOGGLE ===
-        ToggleButton toggle = new ToggleButton("ON");
-        toggle.setPrefWidth(80);
-        toggle.setPrefHeight(28);
-        toggle.setMaxSize(80, 28);
-        toggle.setMinSize(80, 28);
+        ToggleButton toggle = new ToggleButton();
+        toggle.setPrefWidth(60); // Smaller width
+        toggle.setPrefHeight(24); // Smaller height
+        toggle.setMaxSize(60, 24);
+        toggle.setMinSize(60, 24);
         toggle.setAlignment(Pos.CENTER);
         toggle.setSelected(true);
 
-        toggle.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
+        // Helper to update style based on state
+        Runnable updateToggleStyle = () -> {
+            if (toggle.isSelected()) {
                 toggle.setText("ON");
-                toggle.setStyle("-fx-background-color: #e53935; -fx-text-fill: white; -fx-font-weight: bold;");
+                // Pill shape, red background
+                toggle.setStyle("-fx-background-color: #e53935; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12;");
             } else {
                 toggle.setText("OFF");
-                toggle.setStyle("-fx-background-color: #555; -fx-text-fill: white; -fx-font-weight: bold;");
+                // Pill shape, dark background
+                toggle.setStyle("-fx-background-color: #555; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12;");
             }
-        });
+        };
+
+        // Set initial style on launch
+        updateToggleStyle.run();
+
+        // Add listener to update style on change
+        toggle.selectedProperty().addListener((obs, oldVal, newVal) -> updateToggleStyle.run());
 
         panel.addSetting(SettingRows.makeToggleRow("Enabled", toggle));
 
@@ -61,6 +70,14 @@ public class SettingsWindow {
         // === SCENE ===
         Scene scene = new Scene(panel);
         scene.setFill(Color.TRANSPARENT);
+
+        // Load the external stylesheet
+        try {
+            String css = getClass().getResource("/style.css").toExternalForm();
+            scene.getStylesheets().add(css);
+        } catch (Exception e) {
+            System.err.println("Error loading stylesheet: " + e.getMessage());
+        }
 
         stage.setScene(scene);
     }
