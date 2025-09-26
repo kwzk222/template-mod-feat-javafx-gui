@@ -16,30 +16,32 @@ public class ModuleSection extends VBox {
     private boolean enabled = false;
 
     public ModuleSection(String moduleName) {
-        setSpacing(4);
+        setSpacing(2);
         setFillWidth(true);
 
         // --- Header Row ---
         header = new HBox(8);
-        header.setPadding(new Insets(4));
-        header.setBackground(new Background(new BackgroundFill(Color.web("#1e1e1e"),
-                new CornerRadii(6, 6, 0, 0, false), Insets.EMPTY)));
-        header.setBorder(new Border(new BorderStroke(Color.DARKGRAY,
-                BorderStrokeStyle.SOLID, new CornerRadii(6, 6, 0, 0, false), BorderWidths.DEFAULT)));
+        header.setPadding(new Insets(6));
+        header.setBackground(new Background(new BackgroundFill(Color.web("#2b2b2b"),
+                new CornerRadii(8), Insets.EMPTY)));
+        header.setBorder(new Border(new BorderStroke(Color.web("#444444"),
+                BorderStrokeStyle.SOLID, new CornerRadii(8), new BorderWidths(1))));
 
         // Toggle button (ON/OFF bar style)
-        toggleButton = new Button(moduleName);
+        toggleButton = new Button(moduleName + ": OFF");
         toggleButton.setCursor(Cursor.HAND);
-        toggleButton.setPrefWidth(180);
-        updateToggleColor();
+        toggleButton.setPrefWidth(200);
+        toggleButton.setStyle("-fx-background-color: #555555; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
         toggleButton.setOnAction(e -> {
             enabled = !enabled;
-            updateToggleColor();
+            updateToggleStyle(moduleName);
         });
 
         // Expand/collapse arrow
         expandButton = new Button("▶");
         expandButton.setCursor(Cursor.HAND);
+        expandButton.setPrefWidth(24);
+        expandButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 12;");
         expandButton.setOnAction(e -> toggleExpand());
 
         header.getChildren().addAll(toggleButton, expandButton);
@@ -53,11 +55,13 @@ public class ModuleSection extends VBox {
         getChildren().addAll(header, contentBox);
     }
 
-    private void updateToggleColor() {
+    private void updateToggleStyle(String moduleName) {
         if (enabled) {
-            toggleButton.setStyle("-fx-background-color: #b22222; -fx-text-fill: white;");
+            toggleButton.setText(moduleName + ": ON");
+            toggleButton.setStyle("-fx-background-color: #b22222; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
         } else {
-            toggleButton.setStyle("-fx-background-color: #555555; -fx-text-fill: white;");
+            toggleButton.setText(moduleName + ": OFF");
+            toggleButton.setStyle("-fx-background-color: #555555; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
         }
     }
 
