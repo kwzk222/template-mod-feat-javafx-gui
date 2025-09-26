@@ -8,6 +8,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 import javafx.stage.Stage;
+import name.modid.ui.JavaFXInitializer;
 import name.modid.ui.SettingsWindow;
 
 public class TemplateModClient implements ClientModInitializer {
@@ -25,6 +26,7 @@ public class TemplateModClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (openSettings.wasPressed()) {
+                JavaFXInitializer.ensureInit(); // Ensure JavaFX is running
                 Platform.runLater(() -> {
                     try {
                         SettingsWindow.init();
