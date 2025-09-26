@@ -1,17 +1,21 @@
 package name.modid.ui;
 
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import name.modid.ui.DoubleSliderControl;
+import name.modid.ui.SingleSliderControl;
+import name.modid.ui.TogglePill;
 
-public class SettingsPanel extends Stage {
+public class SettingsPanel extends ScrollPane {
 
     public SettingsPanel() {
-        setTitle("Template Mod Settings");
+        // Configure the ScrollPane itself
+        setFitToWidth(true);
+        setStyle("-fx-background: " + UIConstants.BG + "; -fx-border-color: " + UIConstants.BORDER + ";");
 
+        // VBox to hold the modules, which will be the content of the ScrollPane
         VBox root = new VBox(12);
         root.setPadding(new Insets(12));
         root.setStyle("-fx-background-color: " + UIConstants.BG + ";");
@@ -44,23 +48,7 @@ public class SettingsPanel extends Stage {
         // Add all modules to root
         root.getChildren().addAll(combatModule, movementModule);
 
-        // Wrap root in a ScrollPane for scrollability
-        ScrollPane scrollPane = new ScrollPane(root);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background: " + UIConstants.BG + "; -fx-border-color: " + UIConstants.BORDER + ";");
-
-        Scene scene = new Scene(scrollPane, 420, 500); // Increased width slightly for better spacing
-
-        // Load the external stylesheet
-        try {
-            String css = getClass().getResource("/style.css").toExternalForm();
-            if (css != null) {
-                scene.getStylesheets().add(css);
-            }
-        } catch (Exception e) {
-            System.err.println("Error loading stylesheet: " + e.getMessage());
-        }
-
-        setScene(scene);
+        // Set the VBox as the content of this ScrollPane
+        setContent(root);
     }
 }

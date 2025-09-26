@@ -1,47 +1,34 @@
 package name.modid;
 
+import javafx.application.Platform;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
-
-import name.modid.ui.JavaFXBootstrap;
-import name.modid.ui.SettingsPanel;
+import name.modid.ui.SettingsWindow;
 
 public class TemplateModClient implements ClientModInitializer {
 
-    private static KeyBinding openSettingsKey;
-    private static SettingsPanel settingsPanel;
+    private static KeyBinding openSettings;
 
     @Override
     public void onInitializeClient() {
-        // Ensure JavaFX is ready
-        JavaFXBootstrap.init();
-
-        // Register keybinding (Right Shift)
-        openSettingsKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.template-mod.open_settings",
+        openSettings = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.template-mod.open_settings", // Using the existing key name
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_RIGHT_SHIFT,
-                "category.template-mod"
+                "category.templatemod"
         ));
 
-        // Render listener, runs every frame, even in menus
-        WorldRenderEvents.END.register(context -> {
-            while (openSettingsKey.wasPressed()) {
-                JavaFXBootstrap.runLater(() -> {
-                    if (settingsPanel == null) {
-                        settingsPanel = new SettingsPanel();
-                        settingsPanel.show();
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            while (openSettings.wasPressed()) {
+                Platform.runLater(() -> {
+                    if (SettingsWindow.getStage().isShowing()) {
+                        SettingsWindow.getStage().hide();
                     } else {
-                        // toggle visibility
-                        if (settingsPanel.isShowing()) {
-                            settingsPanel.hide();
-                        } else {
-                            settingsPanel.show();
-                        }
+                        SettingsWindow.showWindow();
                     }
                 });
             }
