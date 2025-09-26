@@ -1,69 +1,67 @@
 package name.modid.ui;
 
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.stage.Window;
-import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import name.modid.ui.components.DoubleSlider;
+import name.modid.ui.components.SingleSlider;
 
-public class SettingsPanel extends VBox {
+public class SettingsPanel extends Stage {
 
-    private final HBox header;
-    private double dragOffsetX, dragOffsetY;
-    private final VBox content;
+    public SettingsPanel() {
+        setTitle("Template Mod Settings");
 
-    public SettingsPanel(String titleText) {
+        VBox root = new VBox(12);
+        root.setPadding(new Insets(12));
+        root.setStyle("-fx-background-color: #2b2b2b;");
 
-        // === PANEL STYLING ===
-        setSpacing(0);
-        setPadding(new Insets(0));
-        setStyle("-fx-background-color: #1e1e1e; -fx-background-radius: 12; -fx-border-radius: 12; -fx-border-color: #e53935; -fx-border-width: 2;");
+        // --- Combat module ---
+        ModuleSection combatModule = new ModuleSection("Combat");
 
-        // Clip to rounded corners
-        Rectangle clip = new Rectangle();
-        clip.widthProperty().bind(widthProperty());
-        clip.heightProperty().bind(heightProperty());
-        clip.setArcWidth(12);
-        clip.setArcHeight(12);
-        setClip(clip);
+        // AutoAttack Toggle
+        ToggleButton autoAttackToggle = new ToggleButton("ON");
+        // Note: The new ModuleSection handles the main ON/OFF state.
+        // This is a sub-setting, so we can use a simpler toggle or a different control.
+        // For this example, we'll just add a basic toggle row.
+        combatModule.addSetting(SettingRows.makeToggleRow("AutoAttack", autoAttackToggle));
 
-        // === HEADER ===
-        Label title = new Label(titleText);
-        title.setTextFill(Color.WHITE);
-        title.setStyle("-fx-font-weight: bold; -fx-font-size: 14;");
+        // Chance Slider
+        SingleSlider chanceSlider = new SingleSlider(0, 100, 50, 1);
+        combatModule.addSetting(SettingRows.makeSingleSliderRow("Chance", chanceSlider));
 
-        header = new HBox(title);
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.setPadding(new Insets(8));
-        header.setStyle("-fx-background-color: #2a2a2a; -fx-background-radius: 12 12 0 0;");
-        header.setPrefHeight(32);
+        // Delay Double Slider
+        DoubleSlider delaySlider = new DoubleSlider(0, 50, 7, 21, 1);
+        combatModule.addSetting(SettingRows.makeDoubleSliderRow("Delay", delaySlider));
 
-        // Dragging logic (only via header)
-        header.setOnMousePressed(e -> {
-            Window window = getScene().getWindow();
-            dragOffsetX = e.getScreenX() - window.getX();
-            dragOffsetY = e.getScreenY() - window.getY();
-        });
-        header.setOnMouseDragged(e -> {
-            Window window = getScene().getWindow();
-            window.setX(e.getScreenX() - dragOffsetX);
-            window.setY(e.getScreenY() - dragOffsetY);
-        });
+        // --- Movement module ---
+        ModuleSection movementModule = new ModuleSection("Movement");
 
-        // === CONTENT AREA ===
-        content = new VBox(10);
-        content.setPadding(new Insets(10));
-        content.setAlignment(Pos.TOP_LEFT);
+        // Mode Dropdown
+        ComboBox<String> modeDropdown = new ComboBox<>();
+        modeDropdown.getItems().addAll("Alpha", "Beta", "Gamma");
+        modeDropdown.setValue("Alpha");
+        movementModule.addSetting(SettingRows.makeSelectRow("Mode", modeDropdown));
 
-        // Add header + content
-        getChildren().addAll(header, content);
-    }
+        // Speed Slider
+        SingleSlider speedSlider = new SingleSlider(0, 10, 5, 1);
+        movementModule.addSetting(SettingRows.makeSingleSliderRow("Speed", speedSlider));
 
-    // Add any setting row
-    public void addSetting(Node row) {
-        content.getChildren().add(row);
+        // Add all modules to root
+        root.getChildren().addAll(combatModule, movementModule);
+
+        Scene scene = new Scene(root, 400, 500);
+
+        // Load the external stylesheet
+        try {
+            String css = getClass().getResource("/style.css").toExternalForm();
+            scene.getStylesheets().add(css);
+        } catch (Exception e) {
+            System.err.println("Error loading stylesheet: " + e.getMessage());
+        }
+
+        setScene(scene);
     }
 }

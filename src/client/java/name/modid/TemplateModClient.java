@@ -8,12 +8,12 @@ import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
 import name.modid.ui.JavaFXBootstrap;
-import name.modid.ui.SettingsWindow;
+import name.modid.ui.SettingsPanel;
 
 public class TemplateModClient implements ClientModInitializer {
 
     private static KeyBinding openSettingsKey;
-    private static SettingsWindow settingsWindow;
+    private static SettingsPanel settingsPanel;
 
     @Override
     public void onInitializeClient() {
@@ -32,15 +32,15 @@ public class TemplateModClient implements ClientModInitializer {
         WorldRenderEvents.END.register(context -> {
             while (openSettingsKey.wasPressed()) {
                 JavaFXBootstrap.runLater(() -> {
-                    if (settingsWindow == null) {
-                        settingsWindow = new SettingsWindow();
-                        settingsWindow.show();
+                    if (settingsPanel == null) {
+                        settingsPanel = new SettingsPanel();
+                        settingsPanel.show();
                     } else {
                         // toggle visibility
-                        if (settingsWindow.isShowing()) {
-                            settingsWindow.hide();
+                        if (settingsPanel.isShowing()) {
+                            settingsPanel.hide();
                         } else {
-                            settingsWindow.show();
+                            settingsPanel.show();
                         }
                     }
                 });
