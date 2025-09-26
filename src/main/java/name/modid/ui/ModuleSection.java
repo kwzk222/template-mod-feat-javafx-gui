@@ -1,6 +1,7 @@
 package name.modid.ui;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
@@ -8,76 +9,73 @@ import javafx.scene.paint.Color;
 
 public class ModuleSection extends VBox {
     private final HBox header;
-    private final Button toggleButton;
+    private final TogglePill togglePill;
     private final Button expandButton;
     private final VBox contentBox;
 
     private boolean expanded = false;
-    private boolean enabled = false;
 
     public ModuleSection(String moduleName) {
-        setSpacing(2);
+        setSpacing(4);
         setFillWidth(true);
 
-        // --- Header Row ---
-        header = new HBox(8);
+        header = new HBox();
+        header.setSpacing(8);
         header.setPadding(new Insets(6));
-        header.setBackground(new Background(new BackgroundFill(Color.web("#2b2b2b"),
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setBackground(new Background(new BackgroundFill(Color.web(UIConstants.BG),
                 new CornerRadii(8), Insets.EMPTY)));
-        header.setBorder(new Border(new BorderStroke(Color.web("#444444"),
+        header.setBorder(new Border(new BorderStroke(Color.web(UIConstants.BORDER),
                 BorderStrokeStyle.SOLID, new CornerRadii(8), new BorderWidths(1))));
 
-        // Toggle button (ON/OFF bar style)
-        toggleButton = new Button(moduleName + ": OFF");
-        toggleButton.setCursor(Cursor.HAND);
-        toggleButton.setPrefWidth(200);
-        toggleButton.setStyle("-fx-background-color: #555555; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
-        toggleButton.setOnAction(e -> {
-            enabled = !enabled;
-            updateToggleStyle(moduleName);
-        });
+        // Left label
+        javafx.scene.control.Label nameLabel = new javafx.scene.control.Label(moduleName);
+        nameLabel.setTextFill(javafx.scene.paint.Color.web(UIConstants.TEXT));
+        nameLabel.setPrefWidth(120); // fixed width so everything aligns
+        nameLabel.setStyle("-fx-font-weight: bold;");
 
-        // Expand/collapse arrow
-        expandButton = new Button("►"); // Use cleaner initial arrow
+        // Toggle pill on the right of the label (matching style)
+        togglePill = new TogglePill(false);
+
+        // Expand/collapse arrow (fixed size, transparent background)
+        expandButton = new Button("▼"); // starts closed -> show down arrow
         expandButton.setCursor(Cursor.HAND);
-        expandButton.setPrefWidth(24);
-        expandButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 12;");
+        expandButton.setPrefWidth(22);
+        expandButton.setFocusTraversable(false);
+        expandButton.setStyle("-fx-background-color: transparent; -fx-text-fill: " + UIConstants.TEXT + "; -fx-font-size: 12;");
+
         expandButton.setOnAction(e -> toggleExpand());
 
-        header.getChildren().addAll(toggleButton, expandButton);
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // --- Content area (settings) ---
+        header.getChildren().addAll(nameLabel, spacer, togglePill, expandButton);
+
+        // content area
         contentBox = new VBox(6);
-        contentBox.setPadding(new Insets(6, 6, 6, 24));
+        contentBox.setPadding(new Insets(6, 6, 6, 20));
         contentBox.setVisible(false);
         contentBox.setManaged(false);
 
         getChildren().addAll(header, contentBox);
     }
 
-    private void updateToggleStyle(String moduleName) {
-        if (enabled) {
-            toggleButton.setText(moduleName + ": ON");
-            toggleButton.setStyle("-fx-background-color: #b22222; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
-        } else {
-            toggleButton.setText(moduleName + ": OFF");
-            toggleButton.setStyle("-fx-background-color: #555555; -fx-text-fill: white; -fx-background-radius: 6; -fx-font-weight: bold;");
-        }
-    }
-
     private void toggleExpand() {
         expanded = !expanded;
-        expandButton.setText(expanded ? "▼" : "►");  // Use cleaner arrows
+        expandButton.setText(expanded ? "▲" : "▼"); // open -> up arrow; closed -> down arrow
         contentBox.setVisible(expanded);
         contentBox.setManaged(expanded);
     }
 
-    // Add child settings (sliders, dropdowns, etc.)
     public void addSetting(javafx.scene.Node node) {
         contentBox.getChildren().add(node);
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return togglePill.isSelected();
+    }
+
+    public void setEnabled(boolean value) {
+        togglePill.setSelected(value);
     }
 }

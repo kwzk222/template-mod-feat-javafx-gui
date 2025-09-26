@@ -6,9 +6,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import name.modid.ui.components.ToggleSwitch;
-import name.modid.ui.components.DoubleSlider;
-import name.modid.ui.components.SingleSlider;
 
 public class SettingsPanel extends Stage {
 
@@ -17,21 +14,20 @@ public class SettingsPanel extends Stage {
 
         VBox root = new VBox(12);
         root.setPadding(new Insets(12));
-        root.setStyle("-fx-background-color: #2b2b2b;");
+        root.setStyle("-fx-background-color: " + UIConstants.BG + ";");
 
         // --- Combat module ---
         ModuleSection combatModule = new ModuleSection("Combat");
+        combatModule.setEnabled(true); // Example: start with this module enabled
 
-        // AutoAttack Toggle
-        combatModule.addSetting(new ToggleSwitch("AutoAttack"));
+        // AutoAttack Toggle (uses the new TogglePill)
+        combatModule.addSetting(SettingRows.makeRow("AutoAttack", new TogglePill(true)));
 
         // Chance Slider
-        SingleSlider chanceSlider = new SingleSlider(0, 100, 50, 1);
-        combatModule.addSetting(SettingRows.makeSingleSliderRow("Chance", chanceSlider));
+        combatModule.addSetting(SettingRows.makeRow("Chance", new SingleSliderControl(0, 100, 50, 1)));
 
         // Delay Double Slider
-        DoubleSlider delaySlider = new DoubleSlider(0, 50, 7, 21, 1);
-        combatModule.addSetting(SettingRows.makeDoubleSliderRow("Delay", delaySlider));
+        combatModule.addSetting(SettingRows.makeRow("Delay", new DoubleSliderControl(0, 50, 7, 21, 1)));
 
         // --- Movement module ---
         ModuleSection movementModule = new ModuleSection("Movement");
@@ -43,8 +39,7 @@ public class SettingsPanel extends Stage {
         movementModule.addSetting(SettingRows.makeSelectRow("Mode", modeDropdown));
 
         // Speed Slider
-        SingleSlider speedSlider = new SingleSlider(0, 10, 5, 1);
-        movementModule.addSetting(SettingRows.makeSingleSliderRow("Speed", speedSlider));
+        movementModule.addSetting(SettingRows.makeRow("Speed", new SingleSliderControl(0, 10, 5, 1)));
 
         // Add all modules to root
         root.getChildren().addAll(combatModule, movementModule);
@@ -52,14 +47,16 @@ public class SettingsPanel extends Stage {
         // Wrap root in a ScrollPane for scrollability
         ScrollPane scrollPane = new ScrollPane(root);
         scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background: #2b2b2b; -fx-border-color: #444444;");
+        scrollPane.setStyle("-fx-background: " + UIConstants.BG + "; -fx-border-color: " + UIConstants.BORDER + ";");
 
-        Scene scene = new Scene(scrollPane, 400, 500);
+        Scene scene = new Scene(scrollPane, 420, 500); // Increased width slightly for better spacing
 
         // Load the external stylesheet
         try {
             String css = getClass().getResource("/style.css").toExternalForm();
-            scene.getStylesheets().add(css);
+            if (css != null) {
+                scene.getStylesheets().add(css);
+            }
         } catch (Exception e) {
             System.err.println("Error loading stylesheet: " + e.getMessage());
         }
