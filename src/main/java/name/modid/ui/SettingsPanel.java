@@ -2,23 +2,15 @@ package name.modid.ui;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
-import name.modid.ui.DoubleSliderControl;
-import name.modid.ui.SingleSliderControl;
-import name.modid.ui.TogglePill;
 
-public class SettingsPanel extends ScrollPane {
+public class SettingsPanel extends VBox {
 
     public SettingsPanel() {
-        // Configure the ScrollPane itself
-        setFitToWidth(true);
-        setStyle("-fx-background: " + UIConstants.BG + "; -fx-border-color: " + UIConstants.BORDER + ";");
-
-        // VBox to hold the modules, which will be the content of the ScrollPane
-        VBox root = new VBox(12);
-        root.setPadding(new Insets(12));
-        root.setStyle("-fx-background-color: " + UIConstants.BG + ";");
+        // Configure the VBox itself
+        setSpacing(12);
+        setPadding(new Insets(12));
+        setStyle("-fx-background-color: " + UIConstants.BG + ";");
 
         // --- Combat module ---
         ModuleSection combatModule = new ModuleSection("Combat");
@@ -45,10 +37,7 @@ public class SettingsPanel extends ScrollPane {
         // Speed Slider
         movementModule.addSetting(SettingRows.makeRow("Speed", new SingleSliderControl(0, 10, 5, 1)));
 
-        // Add all modules to root
-        root.getChildren().addAll(combatModule, movementModule);
-
-        // Set the VBox as the content of this ScrollPane
-        setContent(root);
+        // Add all modules to this VBox
+        getChildren().addAll(combatModule, movementModule);
     }
 }

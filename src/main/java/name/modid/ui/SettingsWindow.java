@@ -7,17 +7,19 @@ public class SettingsWindow {
 
     private static Stage stage;
 
-    public static boolean isOpen() {
+    public static boolean isShowing() {
         return stage != null && stage.isShowing();
     }
 
-    public static void show() {
+    public static void showWindow() {
         if (stage == null) {
             stage = new Stage();
             stage.setTitle("Template Mod Settings");
 
+            // Your main panel
             SettingsPanel panel = new SettingsPanel();
-            Scene scene = new Scene(panel, 400, 600);
+
+            Scene scene = new Scene(panel, 400, 600); // Width x Height
             stage.setScene(scene);
 
             stage.setResizable(true);
@@ -26,16 +28,9 @@ public class SettingsWindow {
         stage.toFront();
     }
 
-    // Method to match the client call
-    public static void showWindow() {
-        show();
-    }
-
-    // Adding getStage for completeness, as the old client code used it.
-    public static Stage getStage() {
-        if (stage == null) {
-            show(); // Ensure stage is initialized
+    public static void hideWindow() {
+        if (stage != null) {
+            stage.hide();
         }
-        return stage;
     }
 }
