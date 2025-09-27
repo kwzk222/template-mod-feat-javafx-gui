@@ -1,12 +1,15 @@
 package name.modid.ui;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,17 +24,21 @@ public class SettingsPanel extends VBox {
         this.setStyle("-fx-background-color: #1c1c1c; -fx-border-radius: 8; -fx-background-radius: 8;");
 
         // Example: Auto Attack Module
-        addModule("Auto Attack", module -> {
-            module.addToggle("Enabled", true);
+        addModule("Auto Attack", true, module -> {
+            module.addDropdown("Target", "Player", "Mob", "All");
             module.addSlider("Delay", 0, 50, 10, 1, "ticks");
-            module.addDoubleSlider("Chance", 0, 100, 10, 50, 5, "%");
+            module.addDoubleSlider("Chance", 0, 100, 10, 50, 1, "%");
+        });
+
+        addModule("Flight", false, module -> {
+            module.addSlider("Speed", 0, 10, 2, 1, "x");
         });
 
         // Add more modules here...
     }
 
-    private void addModule(String name, ModuleConfigurer configurer) {
-        ModuleBar module = new ModuleBar(name);
+    private void addModule(String name, boolean active, ModuleConfigurer configurer) {
+        ModuleBar module = new ModuleBar(name, active);
         configurer.configure(module);
         this.getChildren().add(module);
         modules.add(module);
@@ -44,252 +51,342 @@ public class SettingsPanel extends VBox {
 
     // --------------------- ModuleBar ---------------------
     public static class ModuleBar extends VBox {
-        private final HBox header;
-        private final Label nameLabel;
-        private final Button toggleButton;
-        private final Button arrowButton;
-        private final VBox content;
-        private boolean expanded = false;
+        private final VBox children;
+        final HBox bar; // The main toggle bar
+        private final Label arrow;
+        private boolean open = false;
+        private boolean isActive;
 
-        public ModuleBar(String moduleName) {
-            this.setSpacing(4);
-            this.setPadding(new Insets(4));
-            this.setStyle("-fx-background-color: #2a2a2a; -fx-border-radius: 6; -fx-background-radius: 6;");
+        public ModuleBar(String name, boolean active) {
+            this.isActive = active;
+            setSpacing(5);
 
-            // Header
-            header = new HBox();
-            header.setSpacing(8);
-            header.setPadding(new Insets(4));
+            bar = new HBox();
+            bar.setPadding(new Insets(8));
+            bar.setAlignment(Pos.CENTER_LEFT);
+            updateBarStyle();
 
-            nameLabel = new Label(moduleName);
-            nameLabel.setTextFill(Color.WHITE);
-            nameLabel.setFont(new Font("Arial", 14));
+            Label moduleLabel = new Label(name);
+            moduleLabel.setTextFill(Color.WHITE);
+            moduleLabel.setFont(Font.font(14));
 
-            toggleButton = createToggleButton(false);
-            arrowButton = new Button("▼");
-            arrowButton.setFont(Font.font(12));
-            arrowButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 0;");
-            arrowButton.setOnAction(e -> toggleExpand());
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
 
-            header.getChildren().addAll(nameLabel, toggleButton, arrowButton);
+            arrow = new Label("▼");
+            arrow.setTextFill(Color.WHITE);
+            arrow.setFont(Font.font(16));
 
-            content = new VBox();
-            content.setSpacing(6);
-            content.setPadding(new Insets(4));
-            content.setVisible(false);
+            bar.getChildren().addAll(moduleLabel, spacer, arrow);
 
-            this.getChildren().addAll(header, content);
-        }
+            children = new VBox(5);
+            children.setPadding(new Insets(5, 0, 0, 15));
+            children.setVisible(open);
+            children.setManaged(open);
 
-        private void toggleExpand() {
-            expanded = !expanded;
-            content.setVisible(expanded);
-            arrowButton.setText(expanded ? "▲" : "▼");
-        }
-
-        public void addToggle(String name, boolean initial) {
-            AutoToggle toggle = new AutoToggle(name, initial);
-            content.getChildren().add(toggle);
-        }
-
-        public void addSlider(String name, int min, int max, int initial, int step, String suffix) {
-            SliderControl slider = new SliderControl(name, min, max, initial, step, suffix);
-            content.getChildren().add(slider);
-        }
-
-        public void addDoubleSlider(String name, int min, int max, int low, int high, int step, String suffix) {
-            DoubleSliderControl slider = new DoubleSliderControl(name, min, max, low, high, step, suffix);
-            content.getChildren().add(slider);
-        }
-
-        private Button createToggleButton(boolean initial) {
-            Button btn = new Button(initial ? "ON" : "OFF");
-            btn.setStyle("-fx-background-radius: 12; -fx-background-color: " + (initial ? "#ff3333" : "#555555") + "; -fx-text-fill: white;");
-            btn.setPrefWidth(50);
-            btn.setOnAction(e -> {
-                boolean on = btn.getText().equals("OFF");
-                btn.setText(on ? "ON" : "OFF");
-                btn.setStyle("-fx-background-radius: 12; -fx-background-color: " + (on ? "#ff3333" : "#555555") + "; -fx-text-fill: white;");
+            bar.setOnMouseClicked(e -> {
+                if (e.getTarget() != arrow) {
+                    isActive = !isActive;
+                    updateBarStyle();
+                }
             });
-            return btn;
+
+            arrow.setOnMouseClicked(e -> {
+                open = !open;
+                children.setVisible(open);
+                children.setManaged(open);
+                arrow.setText(open ? "▲" : "▼");
+                e.consume();
+            });
+
+            getChildren().addAll(bar, children);
+        }
+
+        private void updateBarStyle() {
+            String style = isActive
+                ? "-fx-background-color: red; -fx-background-radius: 8;"
+                : "-fx-background-color: #444444; -fx-background-radius: 8;";
+            bar.setStyle(style);
+        }
+
+        public void addDropdown(String name, String... options) {
+            DropdownControl dropdown = new DropdownControl(name, options);
+            children.getChildren().add(dropdown);
+        }
+
+        public void addSlider(String name, double min, double max, double initial, double step, String unit) {
+            SliderControl control = new SliderControl(name, min, max, initial, step, unit);
+            children.getChildren().add(control);
+        }
+
+        public void addDoubleSlider(String name, double min, double max, double low, double high, double step, String unit) {
+            DoubleSliderControl control = new DoubleSliderControl(name, min, max, low, high, step, unit);
+            children.getChildren().add(control);
         }
     }
 
-    // --------------------- AutoToggle ---------------------
-    public static class AutoToggle extends HBox {
-        private final Label nameLabel;
-        private final Button toggleButton;
+    // --------------------- DropdownControl ---------------------
+    public static class DropdownControl extends HBox {
+        public DropdownControl(String name, String... options) {
+            super(10);
+            setAlignment(Pos.CENTER_LEFT);
+            setPadding(new Insets(5, 10, 5, 10));
 
-        public AutoToggle(String name, boolean initial) {
-            this.setSpacing(8);
+            Label label = new Label(name);
+            label.setTextFill(Color.WHITE);
+            label.setFont(Font.font(14));
 
-            nameLabel = new Label(name);
-            nameLabel.setTextFill(Color.WHITE);
-            nameLabel.setFont(Font.font(13));
+            ComboBox<String> dropdown = new ComboBox<>();
+            dropdown.getItems().addAll(options);
+            if (options.length > 0) {
+                dropdown.setValue(options[0]);
+            }
 
-            toggleButton = new Button(initial ? "ON" : "OFF");
-            toggleButton.setPrefWidth(50);
-            toggleButton.setStyle("-fx-background-radius: 12; -fx-background-color: " + (initial ? "#ff3333" : "#555555") + "; -fx-text-fill: white;");
-            toggleButton.setOnAction(e -> {
-                boolean on = toggleButton.getText().equals("OFF");
-                toggleButton.setText(on ? "ON" : "OFF");
-                toggleButton.setStyle("-fx-background-radius: 12; -fx-background-color: " + (on ? "#ff3333" : "#555555") + "; -fx-text-fill: white;");
+            String baseStyle = "-fx-background-color: #2a2a2a; -fx-text-fill: white;";
+            String hoverStyle = "-fx-background-color: red; -fx-text-fill: white;";
+
+            dropdown.setStyle("-fx-background-color: #2a2a2a; -fx-font-size: 13px; -fx-border-width: 0;");
+
+            dropdown.setCellFactory(lv -> new ListCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setStyle(baseStyle);
+                    } else {
+                        setText(item);
+                        setStyle(baseStyle);
+                        hoverProperty().addListener((obs, wasHovered, isNowHovered) -> {
+                            setStyle(isNowHovered ? hoverStyle : baseStyle);
+                        });
+                    }
+                }
             });
 
-            this.getChildren().addAll(nameLabel, toggleButton);
+            dropdown.setButtonCell(new ListCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(item);
+                        setTextFill(Color.WHITE);
+                        setStyle("-fx-background-color: #2a2a2a;");
+                    }
+                }
+            });
+
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+            getChildren().addAll(label, spacer, dropdown);
         }
     }
 
     // --------------------- SliderControl ---------------------
     public static class SliderControl extends HBox {
-        private final Label nameLabel;
         private final Slider slider;
-        private final Label valueLabel;
-        private final String suffix;
+        private final TextField valueBox;
 
-        public SliderControl(String name, int min, int max, int initial, int step, String suffix) {
-            this.setSpacing(6);
+        public SliderControl(String name, double min, double max, double initial, double step, String unit) {
+            super(10);
+            setAlignment(Pos.CENTER_LEFT);
+            setPadding(new Insets(5, 10, 5, 10));
 
-            this.suffix = suffix;
-            nameLabel = new Label(name);
-            nameLabel.setTextFill(Color.WHITE);
-            nameLabel.setFont(Font.font(13));
+            Label label = new Label(name);
+            label.setTextFill(Color.WHITE);
+            label.setFont(Font.font(14));
 
             slider = new Slider(min, max, initial);
             slider.setBlockIncrement(step);
-            slider.setMajorTickUnit(step);
-            slider.setMinorTickCount(0);
-            slider.setShowTickMarks(true);
-            slider.setShowTickLabels(false);
-            slider.setSnapToTicks(true);
-            slider.setStyle("-fx-control-inner-background: #444444;");
 
-            valueLabel = new Label(formatValue(initial));
-            valueLabel.setTextFill(Color.WHITE);
-            valueLabel.setFont(Font.font(13));
+            StackPane sliderPane = new StackPane();
+            Region trackBackground = new Region();
+            trackBackground.setStyle("-fx-background-color: #444; -fx-background-radius: 2;");
+            trackBackground.setPrefHeight(4);
 
-            slider.valueProperty().addListener((obs, oldVal, newVal) -> valueLabel.setText(formatValue(newVal.intValue())));
+            Region trackFill = new Region();
+            trackFill.setStyle("-fx-background-color: red; -fx-background-radius: 2;");
+            trackFill.setPrefHeight(4);
+            StackPane.setAlignment(trackFill, Pos.CENTER_LEFT);
 
-            valueLabel.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
-                    TextField edit = new TextField(String.valueOf((int) slider.getValue()));
-                    edit.setPrefWidth(50);
-                    edit.setStyle("-fx-background-color: #2a2a2a; -fx-text-fill: white; -fx-border-color: #555555;");
-                    this.getChildren().set(this.getChildren().indexOf(valueLabel), edit);
-                    edit.requestFocus();
+            slider.setStyle("-fx-control-inner-background: transparent;");
 
-                    edit.setOnAction(e -> finishEdit(edit));
-                    edit.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
-                        if (!isFocused) finishEdit(edit);
-                    });
+            sliderPane.getChildren().addAll(trackBackground, trackFill, slider);
+            HBox.setHgrow(sliderPane, Priority.ALWAYS);
+
+            slider.widthProperty().addListener((obs, oldW, newW) -> {
+                if (newW.doubleValue() > 0) {
+                    trackFill.prefWidthProperty().bind(
+                        slider.valueProperty().subtract(min).divide(max - min).multiply(newW.doubleValue())
+                    );
                 }
             });
 
-            this.getChildren().addAll(nameLabel, slider, valueLabel);
-        }
+            valueBox = new TextField(String.format("%.0f", initial));
+            valueBox.setStyle("-fx-background-color: #2a2a2a; -fx-text-fill: white; -fx-border-color: #444;");
+            valueBox.setPrefWidth(50);
 
-        private void finishEdit(TextField edit) {
-            int val;
-            try {
-                val = Integer.parseInt(edit.getText());
-            } catch (NumberFormatException e) {
-                val = (int) slider.getValue(); // fallback
-            }
-            int step = (int) slider.getBlockIncrement();
-            val = ((val - (int) slider.getMin() + step / 2) / step) * step + (int) slider.getMin();
-            val = Math.min(Math.max(val, (int) slider.getMin()), (int) slider.getMax());
+            slider.valueProperty().addListener((obs, oldVal, newVal) -> {
+                valueBox.setText(String.format("%.0f", newVal.doubleValue()));
+            });
 
-            slider.setValue(val);
-            this.getChildren().set(this.getChildren().indexOf(edit), valueLabel);
-        }
+            valueBox.setOnAction(e -> {
+                try {
+                    double val = Double.parseDouble(valueBox.getText());
+                    if (val < min) val = min;
+                    if (val > max) val = max;
+                    slider.setValue(val);
+                } catch (NumberFormatException ignored) {
+                    valueBox.setText(String.format("%.0f", slider.getValue()));
+                }
+            });
 
-        private String formatValue(int val) {
-            return suffix.equals("%") ? val + "%" : val + " " + suffix;
+            getChildren().addAll(label, sliderPane, valueBox);
         }
     }
 
     // --------------------- DoubleSliderControl ---------------------
-    public static class DoubleSliderControl extends HBox {
-        private final Label nameLabel;
-        private final Slider lowSlider;
-        private final Slider highSlider;
-        private final Label valueLabel;
-        private final String suffix;
+    public static class DoubleSliderControl extends VBox {
+        private final RangeSlider rangeSlider;
+        private final TextField minBox;
+        private final TextField maxBox;
 
-        public DoubleSliderControl(String name, int min, int max, int low, int high, int step, String suffix) {
-            this.setSpacing(6);
+        public DoubleSliderControl(String name, double min, double max, double low, double high, double step, String unit) {
+            super(5);
+            setPadding(new Insets(5, 10, 5, 10));
 
-            this.suffix = suffix;
-            nameLabel = new Label(name);
-            nameLabel.setTextFill(Color.WHITE);
-            nameLabel.setFont(Font.font(13));
+            Label label = new Label(name);
+            label.setTextFill(Color.WHITE);
+            label.setFont(Font.font(14));
 
-            lowSlider = new Slider(min, max, low);
-            highSlider = new Slider(min, max, high);
-            lowSlider.setBlockIncrement(step);
-            highSlider.setBlockIncrement(step);
-            lowSlider.setSnapToTicks(true);
-            highSlider.setSnapToTicks(true);
-            lowSlider.setMajorTickUnit(step);
-            highSlider.setMajorTickUnit(step);
+            rangeSlider = new RangeSlider(min, max, low, high, step);
 
-            valueLabel = new Label(formatValue(low, high));
-            valueLabel.setTextFill(Color.WHITE);
-            valueLabel.setFont(Font.font(13));
+            minBox = new TextField(String.format("%.0f", low));
+            maxBox = new TextField(String.format("%.0f", high));
 
-            lowSlider.valueProperty().addListener((obs, oldVal, newVal) -> updateLabel());
-            highSlider.valueProperty().addListener((obs, oldVal, newVal) -> updateLabel());
+            String boxStyle = "-fx-background-color: #2a2a2a; -fx-text-fill: white; -fx-border-color: #444;";
+            minBox.setStyle(boxStyle);
+            maxBox.setStyle(boxStyle);
+            minBox.setPrefWidth(50);
+            maxBox.setPrefWidth(50);
 
-            valueLabel.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
-                    TextField edit = new TextField(low + "-" + high);
-                    edit.setPrefWidth(80);
-                    edit.setStyle("-fx-background-color: #2a2a2a; -fx-text-fill: white; -fx-border-color: #555555;");
-                    this.getChildren().set(this.getChildren().indexOf(valueLabel), edit);
-                    edit.requestFocus();
+            rangeSlider.lowValueProperty().addListener((obs, oldV, newV) -> minBox.setText(String.format("%.0f", newV.doubleValue())));
+            rangeSlider.highValueProperty().addListener((obs, oldV, newV) -> maxBox.setText(String.format("%.0f", newV.doubleValue())));
 
-                    edit.setOnAction(e -> finishEdit(edit));
-                    edit.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
-                        if (!isFocused) finishEdit(edit);
-                    });
-                }
+            minBox.setOnAction(e -> {
+                try {
+                    double val = Double.parseDouble(minBox.getText());
+                    rangeSlider.setLowValue(val);
+                } catch (NumberFormatException ignored) {}
             });
 
-            this.getChildren().addAll(nameLabel, lowSlider, highSlider, valueLabel);
+            maxBox.setOnAction(e -> {
+                try {
+                    double val = Double.parseDouble(maxBox.getText());
+                    rangeSlider.setHighValue(val);
+                } catch (NumberFormatException ignored) {}
+            });
+
+            HBox valueRow = new HBox(10, minBox, maxBox);
+            valueRow.setAlignment(Pos.CENTER_RIGHT);
+
+            HBox topRow = new HBox(10, label, new Region(), valueRow);
+            HBox.setHgrow(topRow.getChildren().get(1), Priority.ALWAYS);
+            topRow.setAlignment(Pos.CENTER_LEFT);
+
+            getChildren().addAll(topRow, rangeSlider);
+        }
+    }
+
+    // --------------------- RangeSlider (for DoubleSliderControl) ---------------------
+    public static class RangeSlider extends Region {
+        private final DoubleProperty lowValue = new SimpleDoubleProperty();
+        private final DoubleProperty highValue = new SimpleDoubleProperty();
+        private final double min, max, step;
+
+        private final Region track = new Region();
+        private final Region range = new Region();
+        private final Thumb lowThumb = new Thumb();
+        private final Thumb highThumb = new Thumb();
+        private Thumb selectedThumb = null;
+
+        public RangeSlider(double min, double max, double low, double high, double step) {
+            this.min = min;
+            this.max = max;
+            this.step = step;
+            setLowValue(low);
+            setHighValue(high);
+
+            track.setStyle("-fx-background-color: #444; -fx-background-radius: 3;");
+            range.setStyle("-fx-background-color: red; -fx-background-radius: 3;");
+
+            getChildren().addAll(track, range, lowThumb, highThumb);
+
+            lowValue.addListener((obs, oldV, newV) -> requestLayout());
+            highValue.addListener((obs, oldV, newV) -> requestLayout());
+
+            setUpMouseEvents();
         }
 
-        private void updateLabel() {
-            int low = (int) lowSlider.getValue();
-            int high = (int) highSlider.getValue();
-            if (low > high) { int tmp = low; low = high; high = tmp; }
-            valueLabel.setText(formatValue(low, high));
-        }
+        private void setUpMouseEvents() {
+            for (Thumb thumb : List.of(lowThumb, highThumb)) {
+                thumb.setOnMousePressed(e -> selectedThumb = thumb);
+                thumb.setOnMouseDragged(e -> {
+                    if (selectedThumb != null) {
+                        double mouseX = e.getX() + selectedThumb.getLayoutX();
+                        double newValue = screenToValue(mouseX);
 
-        private void finishEdit(TextField edit) {
-            String[] parts = edit.getText().split("-");
-            int low, high;
-            try {
-                low = Integer.parseInt(parts[0].trim());
-                high = Integer.parseInt(parts[1].trim());
-            } catch (Exception e) {
-                low = (int) lowSlider.getValue();
-                high = (int) highSlider.getValue();
+                        if (selectedThumb == lowThumb) {
+                            setLowValue(Math.min(newValue, getHighValue()));
+                        } else {
+                            setHighValue(Math.max(newValue, getLowValue()));
+                        }
+                    }
+                });
+                thumb.setOnMouseReleased(e -> selectedThumb = null);
             }
-
-            int step = (int) lowSlider.getBlockIncrement();
-            low = ((low - (int) lowSlider.getMin() + step / 2) / step) * step + (int) lowSlider.getMin();
-            high = ((high - (int) highSlider.getMin() + step / 2) / step) * step + (int) highSlider.getMin();
-
-            low = Math.min(Math.max(low, (int) lowSlider.getMin()), (int) lowSlider.getMax());
-            high = Math.min(Math.max(high, (int) highSlider.getMin()), (int) highSlider.getMax());
-
-            lowSlider.setValue(low);
-            highSlider.setValue(high);
-            this.getChildren().set(this.getChildren().indexOf(edit), valueLabel);
         }
 
-        private String formatValue(int low, int high) {
-            return suffix.equals("%") ? low + "-" + high + "%" : low + "-" + high + " " + suffix;
+        @Override
+        protected void layoutChildren() {
+            double trackHeight = 6;
+            double trackY = (getHeight() - trackHeight) / 2;
+            track.resizeRelocate(0, trackY, getWidth(), trackHeight);
+
+            double lowThumbX = valueToScreen(getLowValue());
+            double highThumbX = valueToScreen(getHighValue());
+
+            range.resizeRelocate(lowThumbX, trackY, highThumbX - lowThumbX, trackHeight);
+
+            double thumbSize = 16;
+            lowThumb.resizeRelocate(lowThumbX - thumbSize / 2, (getHeight() - thumbSize) / 2, thumbSize, thumbSize);
+            highThumb.resizeRelocate(highThumbX - thumbSize / 2, (getHeight() - thumbSize) / 2, thumbSize, thumbSize);
+        }
+
+        private double screenToValue(double screen) {
+            double rawValue = (screen / getWidth()) * (max - min) + min;
+            return Math.max(min, Math.min(max, Math.round(rawValue / step) * step));
+        }
+
+        private double valueToScreen(double value) {
+            return (value - min) / (max - min) * getWidth();
+        }
+
+        public double getLowValue() { return lowValue.get(); }
+        public void setLowValue(double val) { lowValue.set(Math.max(min, Math.min(val, max))); }
+        public DoubleProperty lowValueProperty() { return lowValue; }
+
+        public double getHighValue() { return highValue.get(); }
+        public void setHighValue(double val) { highValue.set(Math.max(min, Math.min(val, max))); }
+        public DoubleProperty highValueProperty() { return highValue; }
+
+        private static class Thumb extends Region {
+            Thumb() {
+                setPrefSize(16, 16);
+                setStyle("-fx-background-color: #ddd; -fx-background-radius: 8; -fx-border-color: #aaa; -fx-border-width: 1; -fx-border-radius: 8;");
+            }
         }
     }
 }

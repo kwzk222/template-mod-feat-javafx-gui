@@ -47,10 +47,10 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-lifecycle-events-v1:2.2.22+${project.minecraft_version}"
 
 	// Add platform-specific JavaFX modules
-    implementation "org.openjfx:javafx-base:${javaFxVersion}:win"
-    implementation "org.openjfx:javafx-controls:${javaFxVersion}:win"
-    implementation "org.openjfx:javafx-graphics:${javaFxVersion}:win"
-    implementation "org.openjfx:javafx-swing:${javaFxVersion}:win"
+    implementation "org.openjfx:javafx-base:${javaFxVersion}:linux"
+    implementation "org.openjfx:javafx-controls:${javaFxVersion}:linux"
+    implementation "org.openjfx:javafx-graphics:${javaFxVersion}:linux"
+    implementation "org.openjfx:javafx-swing:${javaFxVersion}:linux"
 	
 }
 
