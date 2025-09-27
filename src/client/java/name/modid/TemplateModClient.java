@@ -17,14 +17,13 @@ public class TemplateModClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        JavaFXInitializer.init(); // ensure FX toolkit is started
-
         KeyBinding openSettings = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.template_mod.settings", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_SHIFT, "key.categories.template_mod")
         );
 
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openSettings.wasPressed()) {
+                JavaFXInitializer.init(); // ensure FX toolkit is started
                 Platform.runLater(this::showSettingsWindow);
             }
         });

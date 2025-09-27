@@ -7,9 +7,12 @@ public class JavaFXInitializer {
 
     public static void init() {
         if (!initialized) {
-            // Startup JavaFX toolkit once
-            Platform.startup(() -> {});
             initialized = true;
+            new Thread(() -> {
+                Platform.startup(() -> {
+                    // Toolkit initialized, but do nothing yet
+                });
+            }, "JavaFX Init Thread").start();
         }
     }
 }
