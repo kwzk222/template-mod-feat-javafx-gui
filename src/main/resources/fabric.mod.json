@@ -16,7 +16,7 @@
 	"environment": "client",
 	"entrypoints": {
 		"client": [
-			"name.modid.TemplateModClient"
+			"name.modid.ModClientInitializer"
 		]
 	},
 	"mixins": [
